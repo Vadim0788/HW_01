@@ -1,8 +1,6 @@
 package haspiev.dev.hw_01;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,19 +16,19 @@ public class AccountService {
     private double transferCommission;
 
 
-    public Account createAccount(int userId){
+    public Account createAccount(int userId) {
         User user = userService.findUserById(userId);
         Account account = new Account(userId, defaultAmount);
         user.addAccount(account);
         return account;
     }
 
-    public void deposit(int accounId, double amount){
-        Account account = findAccountById(accounId);
+    public void deposit(int accountId, double amount) {
+        Account account = findAccountById(accountId);
         account.setMoneyAmount(account.getMoneyAmount() + amount);
     }
 
-    public void withdraw(int accountId, double amount){
+    public void withdraw(int accountId, double amount) {
         Account account = findAccountById(accountId);
         if (account.getMoneyAmount() < amount) {
             throw new IllegalArgumentException("Insufficient funds.");
@@ -38,24 +36,24 @@ public class AccountService {
         account.setMoneyAmount(account.getMoneyAmount() - amount);
     }
 
-    public void transfer(int sourceAccountId, int targetAccountId, double amount){
+    public void transfer(int sourceAccountId, int targetAccountId, double amount) {
         Account source = findAccountById(sourceAccountId);
         Account target = findAccountById(targetAccountId);
 
-        double comission = (source.getUsreId() != target.getUsreId()) ? amount * (transferCommission / 100) : 0;
-        double totalAmount = amount + comission;
+        double commission = (source.getUserId() != target.getUserId()) ? amount * (transferCommission / 100) : 0;
+        double totalAmount = amount + commission;
 
         if (source.getMoneyAmount() < totalAmount) {
-            throw new IllegalArgumentException("Insufficient funds for trasnfer with commission.");
+            throw new IllegalArgumentException("Insufficient funds for transfer with commission.");
         }
 
         source.setMoneyAmount(source.getMoneyAmount() - totalAmount);
         target.setMoneyAmount(target.getMoneyAmount() + amount);
     }
 
-    public void closeAccount(int accountId){
+    public void closeAccount(int accountId) {
         Account account = findAccountById(accountId);
-        User user = userService.findUserById(account.getUsreId());
+        User user = userService.findUserById(account.getUserId());
 
         if (user.getAccountList().size() <= 1) {
             throw new IllegalArgumentException("Cannot close the only account.");
@@ -71,10 +69,10 @@ public class AccountService {
         user.getAccountList().remove(account);
     }
 
-    private Account findAccountById(int accounId) {
-        for (User user : userService.getAllUsers()){
+    private Account findAccountById(int accountId) {
+        for (User user : userService.getAllUsers()) {
             for (Account account : user.getAccountList()) {
-                if (account.getId() == accounId) {
+                if (account.getId() == accountId) {
                     return account;
                 }
             }

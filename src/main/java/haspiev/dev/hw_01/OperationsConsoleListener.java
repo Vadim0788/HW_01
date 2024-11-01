@@ -7,27 +7,32 @@ import java.util.Scanner;
 
 @Component
 public class OperationsConsoleListener {
-    public void stratListening(){}
     @Autowired
     private UserService userService;
-
     @Autowired
     private AccountService accountService;
 
     public void startListening() {
         Scanner scanner = new Scanner(System.in);
-        while (true){
-            System.out.println("Please enter one of operation type:\n-USER_CREATE\n- SHOW_ALL_USER\n" +
-                    "- ACCOUNT_CREATE\n- ACCOUNT_DEPOSIT\n- ACCOUNT_WITHDRAW\n- ACCOUNT_TRANSFER\n- ACCOUNT_CLOSE");
+        boolean stopListening = false;
+        while (!stopListening) {
+            System.out.println("""
+                    Please enter one of operation type:
+                    -USER_CREATE
+                    - SHOW_ALL_USER
+                    - ACCOUNT_CREATE
+                    - ACCOUNT_DEPOSIT
+                    - ACCOUNT_WITHDRAW
+                    - ACCOUNT_TRANSFER
+                    - ACCOUNT_CLOSE""");
             String command = scanner.nextLine().trim();
 
-            switch(command) {
+            switch (command) {
                 case "USER_CREATE":
                     System.out.println("Enter login for new user:");
                     String login = scanner.nextLine();
                     try {
                         User user = userService.createUser(login);
-                        Account account = accountService.createAccount(user.getId());
                         System.out.println("User crated: " + user);
                     } catch (Exception e) {
                         System.out.println("Error creating user: " + e.getMessage());
@@ -65,9 +70,9 @@ public class OperationsConsoleListener {
                     double withdrawalAmount = Double.parseDouble(scanner.nextLine());
                     try {
                         accountService.withdraw(withdrawalAccountId, withdrawalAmount);
-                        System.out.println("Amount " + withdrawalAmount + " withdrawaled.");
+                        System.out.println("Amount " + withdrawalAmount + " withdrawal.");
                     } catch (Exception e) {
-                        System.out.println("Error withdrawaling: " + e.getMessage());
+                        System.out.println("Error withdrawal: " + e.getMessage());
                     }
                     break;
                 case "ACCOUNT_TRANSFER":
@@ -79,22 +84,24 @@ public class OperationsConsoleListener {
                     double transferAmount = Double.parseDouble(scanner.nextLine());
                     try {
                         accountService.transfer(sourceAccountId, targetAccountId, transferAmount);
-                        System.out.println("Amount tranfer (" + transferAmount + ") for " + sourceAccountId + " to " + targetAccountId + " .");
+                        System.out.println("Amount transfer (" + transferAmount + ") for " + sourceAccountId + " to " + targetAccountId + " .");
                     } catch (Exception e) {
-                        System.out.println("Error transfering: " + e.getMessage());
+                        System.out.println("Error transfer: " + e.getMessage());
                     }
                     break;
                 case "ACCOUNT_CLOSE":
                     System.out.println("Enter account ID:");
-                    int clossingAccountId = Integer.parseInt(scanner.nextLine());
+                    int closeAccountId = Integer.parseInt(scanner.nextLine());
 
                     try {
-                        accountService.closeAccount(clossingAccountId);
+                        accountService.closeAccount(closeAccountId);
                         System.out.println("Account was deleted");
                     } catch (Exception e) {
-                        System.out.println("Error clossing: " + e.getMessage());
+                        System.out.println("Closing error: " + e.getMessage());
                     }
                     break;
+                case "q":
+                    stopListening = true;
             }
         }
     }

@@ -1,7 +1,5 @@
 package haspiev.dev.hw_01;
 
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +12,7 @@ public class User {
     private final List<Account> accountList;
 
 
-    public User( String login) {
+    public User(String login) {
 
         this.id = count.incrementAndGet();
         this.login = login;

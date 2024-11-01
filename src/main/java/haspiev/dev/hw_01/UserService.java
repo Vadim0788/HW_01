@@ -1,4 +1,5 @@
 package haspiev.dev.hw_01;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -6,9 +7,9 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private final List<User> users= new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
-    public User createUser (String login) {
+    public User createUser(String login) {
         if (users.stream().anyMatch(u -> u.getLogin().equals(login))) {
             throw new IllegalArgumentException("User with login " + login + " already exist.");
         }
@@ -17,7 +18,7 @@ public class UserService {
         return user;
     }
 
-    public User findUserById(int id){
+    public User findUserById(int id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst()
@@ -25,7 +26,7 @@ public class UserService {
 
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return users;
     }
 

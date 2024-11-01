@@ -5,12 +5,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Account {
     private static final AtomicInteger count = new AtomicInteger(0);
     private final int id;
-    private final int usreId;
+    private final int userId;
     private double moneyAmount;
 
-    public Account(int usreId, double initialAmount) {
+    public Account(int userId, double initialAmount) {
         this.id = count.incrementAndGet();
-        this.usreId = usreId;
+        this.userId = userId;
         this.moneyAmount = initialAmount;
     }
 
@@ -18,8 +18,8 @@ public class Account {
         return id;
     }
 
-    public int getUsreId() {
-        return usreId;
+    public int getUserId() {
+        return userId;
     }
 
     public double getMoneyAmount() {
@@ -34,7 +34,7 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", usreId=" + usreId +
+                ", userId=" + userId +
                 ", moneyAmount=" + moneyAmount +
                 '}';
     }
