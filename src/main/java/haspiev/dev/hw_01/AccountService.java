@@ -8,7 +8,6 @@ public class AccountService {
     @Autowired
     private UserService userService;
 
-
     @Autowired
     private double defaultAmount;
 
@@ -18,7 +17,12 @@ public class AccountService {
 
     public Account createAccount(int userId) {
         User user = userService.findUserById(userId);
-        Account account = new Account(userId, defaultAmount);
+        Account account;
+        if (user.getAccountList().isEmpty()) {
+            account = new Account(userId, defaultAmount);
+        } else {
+            account = new Account(userId, 0);
+        }
         user.addAccount(account);
         return account;
     }

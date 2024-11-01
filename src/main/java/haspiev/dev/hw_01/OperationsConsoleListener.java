@@ -35,7 +35,7 @@ public class OperationsConsoleListener {
                         User user = userService.createUser(login);
                         System.out.println("User crated: " + user);
                     } catch (Exception e) {
-                        System.out.println("Error creating user: " + e.getMessage());
+                        System.out.println("Error executing command ACCOUNT_CREATE: " + e.getMessage());
                     }
                     break;
                 case "SHOW_ALL_USER":
@@ -46,9 +46,9 @@ public class OperationsConsoleListener {
                     int userId = Integer.parseInt(scanner.nextLine());
                     try {
                         Account account = accountService.createAccount(userId);
-                        System.out.println("Account created with ID: " + account.getId());
+                        System.out.println("New account created with ID: " + account.getId());
                     } catch (Exception e) {
-                        System.out.println("Error creating account: " + e.getMessage());
+                        System.out.println("Error executing command ACCOUNT_CREATE: " + e.getMessage());
                     }
                     break;
                 case "ACCOUNT_DEPOSIT":
@@ -60,7 +60,7 @@ public class OperationsConsoleListener {
                         accountService.deposit(depositAccountId, depositAmount);
                         System.out.println("Amount " + depositAmount + " deposited.");
                     } catch (Exception e) {
-                        System.out.println("Error depositing: " + e.getMessage());
+                        System.out.println("Error executing command ACCOUNT_DEPOSIT:" + e.getMessage());
                     }
                     break;
                 case "ACCOUNT_WITHDRAW":
@@ -72,7 +72,8 @@ public class OperationsConsoleListener {
                         accountService.withdraw(withdrawalAccountId, withdrawalAmount);
                         System.out.println("Amount " + withdrawalAmount + " withdrawal.");
                     } catch (Exception e) {
-                        System.out.println("Error withdrawal: " + e.getMessage());
+                        System.out.println("Error executing command ACCOUNT_WITHDRAW: "
+                                + e.getMessage());
                     }
                     break;
                 case "ACCOUNT_TRANSFER":
@@ -84,7 +85,9 @@ public class OperationsConsoleListener {
                     double transferAmount = Double.parseDouble(scanner.nextLine());
                     try {
                         accountService.transfer(sourceAccountId, targetAccountId, transferAmount);
-                        System.out.println("Amount transfer (" + transferAmount + ") for " + sourceAccountId + " to " + targetAccountId + " .");
+                        System.out.println("Amount " + transferAmount
+                                + " transferred from account " + sourceAccountId
+                                + " to account  " + targetAccountId + ".");
                     } catch (Exception e) {
                         System.out.println("Error transfer: " + e.getMessage());
                     }
@@ -95,9 +98,10 @@ public class OperationsConsoleListener {
 
                     try {
                         accountService.closeAccount(closeAccountId);
-                        System.out.println("Account was deleted");
+                        System.out.println("Account with ID " + closeAccountId
+                                + " has been closed");
                     } catch (Exception e) {
-                        System.out.println("Closing error: " + e.getMessage());
+                        System.out.println("Error executing command ACCOUNT_CLOSE: " + e.getMessage());
                     }
                     break;
                 case "q":
