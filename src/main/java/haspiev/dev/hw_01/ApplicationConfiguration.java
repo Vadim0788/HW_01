@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01;
 
+import haspiev.dev.hw_01.account.AccountProperties;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import haspiev.dev.hw_01.account.AccountService;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class ApplicationConfiguration {
 
     @Bean
-    public Scanner scanner(){
+    public Scanner scanner() {
         return new Scanner(System.in);
     }
 
@@ -28,7 +29,7 @@ public class ApplicationConfiguration {
     public OperationConsoleListener operationConsoleListener(
             Scanner scanner,
             List<OperationCommandProcessor> commandProcessorList
-            ){
+    ) {
         Map<ConsoleOperationType, OperationCommandProcessor> map =
                 commandProcessorList
                         .stream()
@@ -40,16 +41,15 @@ public class ApplicationConfiguration {
                         );
         return new OperationConsoleListener(scanner, map);
     }
+
     @Bean
-    public UserService userService (AccountService accountService){
+    public UserService userService(AccountService accountService) {
         return new UserService(accountService);
     }
+
     @Bean
-    public AccountService accountService(
-            @Value("${account.default-amount}") int defaultAmount,
-            @Value("${account.transfer-commission}") double transferCommission
-    ) {
-        return new AccountService(defaultAmount, transferCommission);
+    public AccountService accountService(AccountProperties accountProperties) {
+        return new AccountService(accountProperties);
     }
 
 }
