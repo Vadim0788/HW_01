@@ -1,9 +1,11 @@
 package haspiev.dev.hw_01.user;
 
 import haspiev.dev.hw_01.account.AccountService;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class UserService {
 
     private final Map<Integer, User> userMap;

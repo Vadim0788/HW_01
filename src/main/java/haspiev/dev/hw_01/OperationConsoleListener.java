@@ -4,8 +4,10 @@ import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Component
 public class OperationConsoleListener {
@@ -14,17 +16,27 @@ public class OperationConsoleListener {
 
     public OperationConsoleListener(
             Scanner scanner,
-            Map<ConsoleOperationType, OperationCommandProcessor> processorMap
+            List<OperationCommandProcessor> processorList
     ) {
         this.scanner = scanner;
-        this.processorMap = processorMap;
+        this.processorMap = processorList
+                        .stream()
+                        .collect(
+                                Collectors.toMap(
+                                        OperationCommandProcessor::getOperationType,
+                                        processor -> processor
+                                )
+                        );;
 
     }
 
     public void listenUpdate() {
 
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             var operationType = listenNextOperation();
+            if (operationType == null) {
+                return;
+            }
             processNextOperation(operationType);
         }
     }
@@ -33,7 +45,7 @@ public class OperationConsoleListener {
         System.out.println("\nPlease type next operations: ");
         printAllAvalableOperations();
         System.out.println();
-        while(true){
+        while(!Thread.currentThread().isInterrupted()){
             var nextOperataion = scanner.nextLine();
             try {
                 return ConsoleOperationType.valueOf(nextOperataion);
@@ -41,6 +53,7 @@ public class OperationConsoleListener {
                 System.out.println("No such command found");
             }
         }
+        return null;
     }
 
     private void printAllAvalableOperations() {

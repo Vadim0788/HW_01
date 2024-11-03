@@ -12,10 +12,6 @@ public class Hw01Application {
 
 		ApplicationContext context = SpringApplication.run(Hw01Application.class, args);
 
-		OperationConsoleListener operationConsoleListener = context.getBean(OperationConsoleListener.class);
-		operationConsoleListener.start();
-		operationConsoleListener.listenUpdate();
-		operationConsoleListener.endListen();
 	}
 
 }

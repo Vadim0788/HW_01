@@ -3,9 +3,12 @@ package haspiev.dev.hw_01.operations.processors;
 import haspiev.dev.hw_01.account.AccountService;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
+@Component
 public class AccountTransferProcessor implements OperationCommandProcessor {
     private  final Scanner scanner;
 

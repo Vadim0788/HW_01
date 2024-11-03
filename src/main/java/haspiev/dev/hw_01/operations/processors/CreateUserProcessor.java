@@ -4,9 +4,10 @@ import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import haspiev.dev.hw_01.user.User;
 import haspiev.dev.hw_01.user.UserService;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
-
+@Component
 public class CreateUserProcessor implements OperationCommandProcessor {
     private final Scanner scanner;
     private final UserService userService;
