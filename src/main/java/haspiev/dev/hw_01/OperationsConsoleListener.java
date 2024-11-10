@@ -1,112 +1,84 @@
 package haspiev.dev.hw_01;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import haspiev.dev.hw_01.operations.ConsoleOperationType;
+import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Component
 public class OperationsConsoleListener {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AccountService accountService;
+    private final Scanner scanner;
+    private final Map<ConsoleOperationType, OperationCommandProcessor> processorMap;
+    private boolean doListen ;
+
+    public OperationsConsoleListener(
+            Scanner scanner,
+            List<OperationCommandProcessor> processorList
+    ) {
+        this.scanner = scanner;
+        this.processorMap = processorList
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                OperationCommandProcessor::getOperationType,
+                                processor -> processor
+                        )
+                );
+        this.doListen = true;
+
+    }
 
     public void startListening() {
-        Scanner scanner = new Scanner(System.in);
-        boolean stopListening = false;
-        while (!stopListening) {
-            System.out.println("""
-                    Please enter one of operation type:
-                    -USER_CREATE
-                    - SHOW_ALL_USER
-                    - ACCOUNT_CREATE
-                    - ACCOUNT_DEPOSIT
-                    - ACCOUNT_WITHDRAW
-                    - ACCOUNT_TRANSFER
-                    - ACCOUNT_CLOSE""");
-            String command = scanner.nextLine().trim();
-
-            switch (command) {
-                case "USER_CREATE":
-                    System.out.println("Enter login for new user:");
-                    String login = scanner.nextLine();
-                    try {
-                        User user = userService.createUser(login);
-                        System.out.println("User crated: " + user);
-                    } catch (Exception e) {
-                        System.out.println("Error executing command ACCOUNT_CREATE: " + e.getMessage());
-                    }
-                    break;
-                case "SHOW_ALL_USER":
-                    userService.getAllUsers().forEach(System.out::println);
-                    break;
-                case "ACCOUNT_CREATE":
-                    System.out.println("Enter the user ID for creating a new account:");
-                    int userId = Integer.parseInt(scanner.nextLine());
-                    try {
-                        Account account = accountService.createAccount(userId);
-                        System.out.println("New account created with ID: " + account.getId());
-                    } catch (Exception e) {
-                        System.out.println("Error executing command ACCOUNT_CREATE: " + e.getMessage());
-                    }
-                    break;
-                case "ACCOUNT_DEPOSIT":
-                    System.out.println("Enter account ID:");
-                    int depositAccountId = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter amount to deposit:");
-                    double depositAmount = Double.parseDouble(scanner.nextLine());
-                    try {
-                        accountService.deposit(depositAccountId, depositAmount);
-                        System.out.println("Amount " + depositAmount + " deposited.");
-                    } catch (Exception e) {
-                        System.out.println("Error executing command ACCOUNT_DEPOSIT:" + e.getMessage());
-                    }
-                    break;
-                case "ACCOUNT_WITHDRAW":
-                    System.out.println("Enter account ID:");
-                    int withdrawalAccountId = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter amount to withdrawal:");
-                    double withdrawalAmount = Double.parseDouble(scanner.nextLine());
-                    try {
-                        accountService.withdraw(withdrawalAccountId, withdrawalAmount);
-                        System.out.println("Amount " + withdrawalAmount + " withdrawal.");
-                    } catch (Exception e) {
-                        System.out.println("Error executing command ACCOUNT_WITHDRAW: "
-                                + e.getMessage());
-                    }
-                    break;
-                case "ACCOUNT_TRANSFER":
-                    System.out.println("Enter source account ID:");
-                    int sourceAccountId = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter target account ID:");
-                    int targetAccountId = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter amount to transfer:");
-                    double transferAmount = Double.parseDouble(scanner.nextLine());
-                    try {
-                        accountService.transfer(sourceAccountId, targetAccountId, transferAmount);
-                        System.out.println("Amount " + transferAmount
-                                + " transferred from account " + sourceAccountId
-                                + " to account  " + targetAccountId + ".");
-                    } catch (Exception e) {
-                        System.out.println("Error transfer: " + e.getMessage());
-                    }
-                    break;
-                case "ACCOUNT_CLOSE":
-                    System.out.println("Enter account ID:");
-                    int closeAccountId = Integer.parseInt(scanner.nextLine());
-
-                    try {
-                        accountService.closeAccount(closeAccountId);
-                        System.out.println("Account with ID " + closeAccountId
-                                + " has been closed");
-                    } catch (Exception e) {
-                        System.out.println("Error executing command ACCOUNT_CLOSE: " + e.getMessage());
-                    }
-                    break;
-                case "q":
-                    stopListening = true;
+        System.out.println("Console listener stated");
+        while (doListen) {
+            var operationType = listenNextOperation();
+            if (operationType == null) {
+                return;
             }
+            processNextOperation(operationType);
         }
     }
+
+    private ConsoleOperationType listenNextOperation() {
+        System.out.println("\nPlease type next operations: ");
+        printAllAvailableOperations();
+        System.out.println();
+        while(doListen){
+            var nextOperation = scanner.nextLine();
+            if (nextOperation.equals("q")){
+                doListen = false;
+                System.out.println("Console listener end listen");
+                break;
+            }
+            try {
+                return ConsoleOperationType.valueOf(nextOperation);
+            } catch (IllegalArgumentException e) {
+                System.out.println("No such command found");
+            }
+        }
+        return null;
+    }
+
+    private void printAllAvailableOperations() {
+        processorMap.keySet()
+                .forEach(System.out::println);
+    }
+
+    public void processNextOperation(ConsoleOperationType operationType){
+
+        try {
+            var processor = processorMap.get(operationType);
+            processor.processOperation();
+        } catch (Exception e) {
+            System.out.printf(
+                    "Error executing command %s: error=%s%n", operationType,
+                    e.getMessage()
+            );
+        }
+    }
+
 }

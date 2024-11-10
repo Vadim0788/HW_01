@@ -19,10 +19,12 @@ public class UserService {
     }
 
     public User findUserById(int id) {
+
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("User not find."));
+
 
     }
 

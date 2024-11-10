@@ -1,18 +1,25 @@
 package haspiev.dev.hw_01;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private double defaultAmount;
+    private final UserService userService;
 
-    @Autowired
-    private double transferCommission;
+    private final double defaultAmount;
+
+    private final double transferCommission;
+
+    public AccountService(
+            UserService userService,
+            @Value("${account.default-amount}") double defaultAmount,
+            @Value("${account.transfer-commission}") double transferCommission) {
+        this.userService = userService;
+        this.defaultAmount = defaultAmount;
+        this.transferCommission = transferCommission;
+    }
 
 
     public Account createAccount(int userId) {
@@ -28,12 +35,20 @@ public class AccountService {
     }
 
     public void deposit(int accountId, double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Cannot deposit not positive amount: amount=%s"
+                    .formatted(amount));
+        }
         Account account = findAccountById(accountId);
         account.setMoneyAmount(account.getMoneyAmount() + amount);
     }
 
     public void withdraw(int accountId, double amount) {
         Account account = findAccountById(accountId);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Cannot withdraw not positive amount: amount=%s"
+                    .formatted(amount));
+        }
         if (account.getMoneyAmount() < amount) {
             throw new IllegalArgumentException("Insufficient funds.");
         }
@@ -41,6 +56,10 @@ public class AccountService {
     }
 
     public void transfer(int sourceAccountId, int targetAccountId, double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Cannot transfer not positive amount: amount=%s"
+                    .formatted(amount));
+        }
         Account source = findAccountById(sourceAccountId);
         Account target = findAccountById(targetAccountId);
 
@@ -74,6 +93,7 @@ public class AccountService {
     }
 
     private Account findAccountById(int accountId) {
+
         for (User user : userService.getAllUsers()) {
             for (Account account : user.getAccountList()) {
                 if (account.getId() == accountId) {
@@ -81,6 +101,7 @@ public class AccountService {
                 }
             }
         }
+
         throw new IllegalArgumentException("Account not found.");
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Scanner;
+
 
 @Configuration
 @ComponentScan(basePackages = "haspiev.dev.hw_01")
@@ -26,5 +28,10 @@ public class AppConfig {
     @Bean(name = "transferCommission")
     public double getTransferCommission() {
         return transferCommission;
+    }
+
+    @Bean
+    public Scanner scanner() {
+        return new Scanner(System.in);
     }
 }
