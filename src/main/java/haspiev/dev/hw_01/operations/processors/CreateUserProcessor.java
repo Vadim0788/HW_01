@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01.operations.processors;
 
+
 import haspiev.dev.hw_01.User;
 import haspiev.dev.hw_01.UserService;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
@@ -12,7 +13,6 @@ import java.util.Scanner;
 public class CreateUserProcessor implements OperationCommandProcessor {
 
     private final Scanner scanner;
-
     private final UserService userService;
 
     public CreateUserProcessor(Scanner scanner, UserService userService) {
@@ -22,11 +22,11 @@ public class CreateUserProcessor implements OperationCommandProcessor {
 
     @Override
     public void processOperation() {
+
         System.out.println("Enter login for new user:");
         String login = scanner.nextLine();
         User user = userService.createUser(login);
         System.out.println("User crated: " + user);
-
     }
 
     @Override

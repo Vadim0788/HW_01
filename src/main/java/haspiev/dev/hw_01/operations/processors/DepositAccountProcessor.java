@@ -10,7 +10,6 @@ import java.util.Scanner;
 @Component
 public class DepositAccountProcessor implements OperationCommandProcessor {
     private final Scanner scanner;
-
     private final AccountService accountService;
 
     public DepositAccountProcessor(Scanner scanner, AccountService accountService) {
@@ -27,7 +26,6 @@ public class DepositAccountProcessor implements OperationCommandProcessor {
 
         accountService.deposit(depositAccountId, depositAmount);
         System.out.println("Amount " + depositAmount + " deposited.");
-
     }
 
     @Override

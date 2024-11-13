@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01.operations.processors;
 
+
 import haspiev.dev.hw_01.AccountService;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
@@ -16,16 +17,19 @@ public class CloseAccountProcessor implements OperationCommandProcessor {
     public CloseAccountProcessor(Scanner scanner, AccountService accountService) {
         this.scanner = scanner;
         this.accountService = accountService;
+
     }
 
     @Override
     public void processOperation() {
+
         System.out.println("Enter account ID:");
         int closeAccountId = Integer.parseInt(scanner.nextLine());
 
         accountService.closeAccount(closeAccountId);
         System.out.println("Account with ID " + closeAccountId
                 + " has been closed");
+
 
     }
 

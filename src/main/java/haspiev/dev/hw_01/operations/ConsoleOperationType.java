@@ -1,7 +1,9 @@
 package haspiev.dev.hw_01.operations;
 
 public enum ConsoleOperationType {
-
+    /*
+    Создание нового пользователя
+    */
     USER_CREATE,
     /*
     Показать всех пользователей
@@ -11,6 +13,7 @@ public enum ConsoleOperationType {
     Создание нового счета для пользователя.*/
     ACCOUNT_CREATE,
     /*
+
      * Закрытие счета
      * */
     ACCOUNT_CLOSE,
@@ -25,4 +28,5 @@ public enum ConsoleOperationType {
      * Снятие средств со счета.
      * */
     ACCOUNT_WITHDRAW
+
 }

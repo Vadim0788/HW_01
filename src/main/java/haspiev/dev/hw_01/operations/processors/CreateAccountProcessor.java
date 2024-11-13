@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01.operations.processors;
 
+
 import haspiev.dev.hw_01.Account;
 import haspiev.dev.hw_01.AccountService;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
@@ -21,6 +22,7 @@ public class CreateAccountProcessor implements OperationCommandProcessor {
 
     @Override
     public void processOperation() {
+
         System.out.println("Enter the user ID for creating a new account:");
         int userId = Integer.parseInt(scanner.nextLine());
 
@@ -33,5 +35,4 @@ public class CreateAccountProcessor implements OperationCommandProcessor {
     public ConsoleOperationType getOperationType() {
         return ConsoleOperationType.ACCOUNT_CREATE;
     }
-
 }
