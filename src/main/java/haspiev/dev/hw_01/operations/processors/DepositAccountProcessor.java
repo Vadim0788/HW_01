@@ -19,7 +19,7 @@ public class DepositAccountProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public void processOperation() {
+    public boolean processOperation() {
         System.out.println("Enter account ID:");
         int depositAccountId = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter amount to deposit:");
@@ -27,7 +27,7 @@ public class DepositAccountProcessor implements OperationCommandProcessor {
 
         accountService.deposit(depositAccountId, depositAmount);
         System.out.println("Amount " + depositAmount + " deposited.");
-
+        return true;
     }
 
     @Override

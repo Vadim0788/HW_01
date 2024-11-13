@@ -24,5 +24,9 @@ public enum ConsoleOperationType {
     /*
      * Снятие средств со счета.
      * */
-    ACCOUNT_WITHDRAW
+    ACCOUNT_WITHDRAW,
+    /*
+     * Выход.
+     * */
+    q
 }

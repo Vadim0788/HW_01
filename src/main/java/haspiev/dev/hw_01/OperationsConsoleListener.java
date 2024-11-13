@@ -39,7 +39,7 @@ public class OperationsConsoleListener {
             if (operationType == null) {
                 return;
             }
-            processNextOperation(operationType);
+            doListen = processNextOperation(operationType);
         }
     }
 
@@ -49,11 +49,6 @@ public class OperationsConsoleListener {
         System.out.println();
         while(doListen){
             var nextOperation = scanner.nextLine();
-            if (nextOperation.equals("q")){
-                doListen = false;
-                System.out.println("Console listener end listen");
-                break;
-            }
             try {
                 return ConsoleOperationType.valueOf(nextOperation);
             } catch (IllegalArgumentException e) {
@@ -68,17 +63,19 @@ public class OperationsConsoleListener {
                 .forEach(System.out::println);
     }
 
-    public void processNextOperation(ConsoleOperationType operationType){
-
+    public boolean processNextOperation(ConsoleOperationType operationType){
+        boolean returnedValue = true;
         try {
             var processor = processorMap.get(operationType);
-            processor.processOperation();
+            returnedValue = processor.processOperation();
+
         } catch (Exception e) {
             System.out.printf(
                     "Error executing command %s: error=%s%n", operationType,
                     e.getMessage()
             );
         }
+        return  returnedValue;
     }
 
 }

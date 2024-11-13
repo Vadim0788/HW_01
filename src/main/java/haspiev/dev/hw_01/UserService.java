@@ -2,34 +2,44 @@ package haspiev.dev.hw_01;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserService {
-    private final List<User> users = new ArrayList<>();
 
-    public User createUser(String login) {
-        if (users.stream().anyMatch(u -> u.getLogin().equals(login))) {
-            throw new IllegalArgumentException("User with login " + login + " already exist.");
-        }
-        User user = new User(login);
-        users.add(user);
-        return user;
+    private int count;
+
+    private final Map<Integer, User> userMap;
+    private final Set<String> takenLogins;
+
+    private final AccountService accountService;
+
+    public UserService(AccountService accountService) {
+        this.userMap = new HashMap<>();
+        this.count = 0;
+        this.takenLogins = new HashSet<>();
+        this.accountService = accountService;
     }
 
-    public User findUserById(int id) {
+    public User createUser(String login) {
+        if (takenLogins.contains(login)) {
+            throw new IllegalArgumentException("User with login %s already exist."
+                    .formatted(login));
+        }
+        takenLogins.add(login);
+        User newUser = new User(++count, login);
+        var newAccount = accountService.createAccount(newUser);
+        newUser.addAccount(newAccount);
+        userMap.put(newUser.getId(), newUser);
+        return newUser;
+    }
 
-        return users.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("User not find."));
-
-
+    public Optional<User> findUserById(int id) {
+        return Optional.ofNullable(userMap.get(id));
     }
 
     public List<User> getAllUsers() {
-        return users;
+        return userMap.values().stream().toList();
     }
 
 }

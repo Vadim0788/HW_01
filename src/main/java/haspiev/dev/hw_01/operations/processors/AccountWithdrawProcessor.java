@@ -19,7 +19,7 @@ public class AccountWithdrawProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public void processOperation() {
+    public boolean processOperation() {
         System.out.println("Enter account ID:");
         int withdrawalAccountId = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter amount to withdrawal:");
@@ -27,6 +27,7 @@ public class AccountWithdrawProcessor implements OperationCommandProcessor {
 
         accountService.withdraw(withdrawalAccountId, withdrawalAmount);
         System.out.println("Amount " + withdrawalAmount + " withdrawal.");
+        return true;
     }
 
     @Override

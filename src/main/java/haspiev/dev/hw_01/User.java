@@ -2,19 +2,16 @@ package haspiev.dev.hw_01;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 public class User {
-    private static final AtomicInteger count = new AtomicInteger(0);
+
     private final int id;
     private final String login;
     private final List<Account> accountList;
 
 
-    public User(String login) {
-
-        this.id = count.incrementAndGet();
+    public User(int id, String login) {
+        this.id = id;
         this.login = login;
         this.accountList = new ArrayList<>();
     }
@@ -30,11 +27,6 @@ public class User {
     public void addAccount(Account account) {
         this.accountList.add(account);
     }
-
-    public String getLogin() {
-        return login;
-    }
-
 
     @Override
     public String toString() {

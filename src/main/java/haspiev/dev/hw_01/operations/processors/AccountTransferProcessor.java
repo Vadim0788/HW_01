@@ -19,7 +19,7 @@ public class AccountTransferProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public void processOperation() {
+    public boolean processOperation() {
 
         System.out.println("Enter source account ID:");
         int sourceAccountId = Integer.parseInt(scanner.nextLine());
@@ -31,6 +31,7 @@ public class AccountTransferProcessor implements OperationCommandProcessor {
         System.out.println("Amount " + transferAmount
                 + " transferred from account " + sourceAccountId
                 + " to account  " + targetAccountId + ".");
+        return true;
 
     }
 

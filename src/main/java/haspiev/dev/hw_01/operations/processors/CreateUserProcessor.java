@@ -21,11 +21,12 @@ public class CreateUserProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public void processOperation() {
+    public boolean processOperation() {
         System.out.println("Enter login for new user:");
         String login = scanner.nextLine();
         User user = userService.createUser(login);
         System.out.println("User crated: " + user);
+        return true;
 
     }
 

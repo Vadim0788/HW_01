@@ -3,34 +3,38 @@ package haspiev.dev.hw_01;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 public class AccountService {
 
-    private final UserService userService;
+    private final Map<Integer, Account> accountMap;
+
+    private int count;
 
     private final double defaultAmount;
 
     private final double transferCommission;
 
     public AccountService(
-            UserService userService,
             @Value("${account.default-amount}") double defaultAmount,
             @Value("${account.transfer-commission}") double transferCommission) {
-        this.userService = userService;
+        this.count = 0;
+        this.accountMap = new HashMap<>();
         this.defaultAmount = defaultAmount;
         this.transferCommission = transferCommission;
     }
 
-
-    public Account createAccount(int userId) {
-        User user = userService.findUserById(userId);
+    public Account createAccount(User user) {
         Account account;
-        if (user.getAccountList().isEmpty()) {
-            account = new Account(userId, defaultAmount);
-        } else {
-            account = new Account(userId, 0);
-        }
-        user.addAccount(account);
+        double initialAmount = user.getAccountList().isEmpty() ? defaultAmount : 0;
+
+        account = new Account(++count, user.getId(), initialAmount);
+        accountMap.put(account.getId(), account);
+
         return account;
     }
 
@@ -39,12 +43,16 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot deposit not positive amount: amount=%s"
                     .formatted(amount));
         }
-        Account account = findAccountById(accountId);
+        var account = findAccountById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("No such account %s"
+                        .formatted(accountId)));
         account.setMoneyAmount(account.getMoneyAmount() + amount);
     }
 
     public void withdraw(int accountId, double amount) {
-        Account account = findAccountById(accountId);
+        var account = findAccountById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("No such account %s"
+                        .formatted(accountId)));
         if (amount <= 0) {
             throw new IllegalArgumentException("Cannot withdraw not positive amount: amount=%s"
                     .formatted(amount));
@@ -60,8 +68,12 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot transfer not positive amount: amount=%s"
                     .formatted(amount));
         }
-        Account source = findAccountById(sourceAccountId);
-        Account target = findAccountById(targetAccountId);
+        var source = findAccountById(sourceAccountId)
+                .orElseThrow(() -> new IllegalArgumentException("No such account %s"
+                        .formatted(sourceAccountId)));
+        var target = findAccountById(targetAccountId)
+                .orElseThrow(() -> new IllegalArgumentException("No such account %s"
+                        .formatted(targetAccountId)));
 
         double commission = (source.getUserId() != target.getUserId()) ? amount * (transferCommission / 100) : 0;
         double totalAmount = amount + commission;
@@ -75,33 +87,32 @@ public class AccountService {
     }
 
     public void closeAccount(int accountId) {
-        Account account = findAccountById(accountId);
-        User user = userService.findUserById(account.getUserId());
 
-        if (user.getAccountList().size() <= 1) {
+        var accountToRemove = findAccountById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("No such account: %s"
+                        .formatted(accountId)));
+        List<Account> accountList = getAllUserAccount(accountId);
+        if (accountList.size() == 1) {
             throw new IllegalArgumentException("Cannot close the only account.");
         }
 
-        Account firstAccount = user.getAccountList().get(0);
-        Account secondAccount = user.getAccountList().get(1);
-        if (firstAccount != account) {
-            firstAccount.setMoneyAmount(firstAccount.getMoneyAmount() + account.getMoneyAmount());
-        } else {
-            secondAccount.setMoneyAmount(secondAccount.getMoneyAmount() + account.getMoneyAmount());
-        }
-        user.getAccountList().remove(account);
+        Account accountToDeposit = accountList.stream()
+                .filter(it -> it.getId() != accountId)
+                .findFirst()
+                .orElseThrow();
+        accountToDeposit.setMoneyAmount(accountToDeposit.getMoneyAmount() + accountToRemove.getMoneyAmount());
+        accountMap.remove(accountId);
+
     }
 
-    private Account findAccountById(int accountId) {
+    private Optional<Account> findAccountById(int id) {
+        return Optional.ofNullable(accountMap.get(id));
+    }
 
-        for (User user : userService.getAllUsers()) {
-            for (Account account : user.getAccountList()) {
-                if (account.getId() == accountId) {
-                    return account;
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Account not found.");
+    public List<Account> getAllUserAccount(int userId) {
+        return accountMap.values()
+                .stream()
+                .filter(account -> account.getUserId() == userId)
+                .toList();
     }
 }

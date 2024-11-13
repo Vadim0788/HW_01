@@ -1,15 +1,13 @@
 package haspiev.dev.hw_01;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class Account {
-    private static final AtomicInteger count = new AtomicInteger(0);
+
     private final int id;
     private final int userId;
     private double moneyAmount;
 
-    public Account(int userId, double initialAmount) {
-        this.id = count.incrementAndGet();
+    public Account(int id, int userId, double initialAmount) {
+        this.id = id;
         this.userId = userId;
         this.moneyAmount = initialAmount;
     }

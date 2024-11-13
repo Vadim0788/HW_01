@@ -19,13 +19,14 @@ public class CloseAccountProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public void processOperation() {
+    public boolean processOperation() {
         System.out.println("Enter account ID:");
         int closeAccountId = Integer.parseInt(scanner.nextLine());
 
         accountService.closeAccount(closeAccountId);
         System.out.println("Account with ID " + closeAccountId
                 + " has been closed");
+        return true;
 
     }
 
