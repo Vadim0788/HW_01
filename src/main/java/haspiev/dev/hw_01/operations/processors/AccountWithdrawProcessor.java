@@ -1,15 +1,14 @@
 package haspiev.dev.hw_01.operations.processors;
 
-import haspiev.dev.hw_01.AccountService;
+import haspiev.dev.hw_01.account.AccountService;
 import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
-
 @Component
 public class AccountWithdrawProcessor implements OperationCommandProcessor {
-    private final Scanner scanner;
+    private  final Scanner scanner;
 
     private final AccountService accountService;
 
@@ -19,15 +18,14 @@ public class AccountWithdrawProcessor implements OperationCommandProcessor {
     }
 
     @Override
-    public boolean processOperation() {
-        System.out.println("Enter account ID:");
-        int withdrawalAccountId = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter amount to withdrawal:");
-        double withdrawalAmount = Double.parseDouble(scanner.nextLine());
-
-        accountService.withdraw(withdrawalAccountId, withdrawalAmount);
-        System.out.println("Amount " + withdrawalAmount + " withdrawal.");
-        return true;
+    public void processOperation() {
+        System.out.println("Enter account id:");
+        int accounId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter amount to withdraw:");
+        int amountToWithdraw = Integer.parseInt(scanner.nextLine());
+        accountService.withdrawFromAccount(accounId, amountToWithdraw);
+        System.out.println("Successfully withdrawn amount %s to account %s"
+                .formatted(amountToWithdraw, accounId));
     }
 
     @Override

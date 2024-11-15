@@ -1,20 +1,17 @@
 package haspiev.dev.hw_01;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
-@Configuration
-@ComponentScan(basePackages = "haspiev.dev.hw_01")
-@PropertySource("classpath:application.properties")
+@SpringBootApplication
 public class Hw01Application {
 
-    public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        OperationsConsoleListener listener = context.getBean(OperationsConsoleListener.class);
-        listener.startListening();
-        context.close();
-    }
+	public static void main(String[] args) {
+
+		ApplicationContext context = SpringApplication.run(Hw01Application.class, args);
+
+	}
 
 }

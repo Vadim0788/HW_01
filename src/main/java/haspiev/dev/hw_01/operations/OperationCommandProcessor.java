@@ -1,7 +1,8 @@
 package haspiev.dev.hw_01.operations;
 
 public interface OperationCommandProcessor {
-    boolean processOperation();
+
+    void processOperation();
 
     ConsoleOperationType getOperationType();
 }
