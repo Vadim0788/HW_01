@@ -1,23 +1,30 @@
 package haspiev.dev.hw_01;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "accounts")
 public class Account {
 
-    private final int id;
-    private final int userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     private double moneyAmount;
 
-    public Account(int id, int userId, double initialAmount) {
-        this.id = id;
-        this.userId = userId;
+    public Account(User user, double initialAmount) {
+        this.user = user;
         this.moneyAmount = initialAmount;
     }
 
-    public int getId() {
-        return id;
+    public Account() {
+
     }
 
-    public int getUserId() {
-        return userId;
+    public Long getUserId() {
+        return user.getId();
     }
 
     public double getMoneyAmount() {
@@ -32,8 +39,12 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", userId=" + userId +
+                ", userId=" + user.getId() +
                 ", moneyAmount=" + moneyAmount +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
     }
 }

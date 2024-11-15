@@ -7,39 +7,41 @@ import java.util.*;
 @Service
 public class UserService {
 
-    private int count;
-
-    private final Map<Integer, User> userMap;
-    private final Set<String> takenLogins;
+    private final TransactionHelper transactionHelper;
 
     private final AccountService accountService;
 
-    public UserService(AccountService accountService) {
-        this.userMap = new HashMap<>();
-        this.count = 0;
-        this.takenLogins = new HashSet<>();
+    public UserService(TransactionHelper transactionHelper, AccountService accountService) {
+        this.transactionHelper = transactionHelper;
         this.accountService = accountService;
     }
 
     public User createUser(String login) {
-        if (takenLogins.contains(login)) {
-            throw new IllegalArgumentException("User with login %s already exist."
-                    .formatted(login));
-        }
-        takenLogins.add(login);
-        User newUser = new User(++count, login);
-        var newAccount = accountService.createAccount(newUser);
-        newUser.addAccount(newAccount);
-        userMap.put(newUser.getId(), newUser);
-        return newUser;
-    }
+        return transactionHelper.executeInTransaction(session -> {
+            User newUser = new User(login);
 
-    public Optional<User> findUserById(int id) {
-        return Optional.ofNullable(userMap.get(id));
+            if (session
+                    .createQuery("SELECT u FROM User u WHERE u.login = :login", User.class)
+                    .setParameter("login", login)
+                    .uniqueResultOptional()
+                    .isPresent()) {
+                throw new IllegalArgumentException("User with login %s already exist."
+                        .formatted(login));
+            }
+
+            var newAccount = accountService.createAccountWithoutTransaction(newUser);
+            newUser.addAccount(newAccount);
+            session.persist(newUser);
+            return newUser;
+        });
     }
 
     public List<User> getAllUsers() {
-        return userMap.values().stream().toList();
-    }
+        return transactionHelper.executeInTransaction(session -> {
+            return session
+                    .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.accountList", User.class)
+                    .list();
+        });
 
+    }
 }

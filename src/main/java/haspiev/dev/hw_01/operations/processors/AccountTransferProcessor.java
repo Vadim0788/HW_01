@@ -22,9 +22,9 @@ public class AccountTransferProcessor implements OperationCommandProcessor {
     public boolean processOperation() {
 
         System.out.println("Enter source account ID:");
-        int sourceAccountId = Integer.parseInt(scanner.nextLine());
+        Long sourceAccountId = Long.parseLong(scanner.nextLine());
         System.out.println("Enter target account ID:");
-        int targetAccountId = Integer.parseInt(scanner.nextLine());
+        Long targetAccountId = Long.parseLong(scanner.nextLine());
         System.out.println("Enter amount to transfer:");
         double transferAmount = Double.parseDouble(scanner.nextLine());
         accountService.transfer(sourceAccountId, targetAccountId, transferAmount);
