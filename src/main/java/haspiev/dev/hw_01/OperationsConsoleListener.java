@@ -67,7 +67,7 @@ public class OperationsConsoleListener {
         boolean returnedValue = true;
         try {
             var processor = processorMap.get(operationType);
-            returnedValue = processor.processOperation();
+            processor.processOperation();
 
         } catch (Exception e) {
             System.out.printf(

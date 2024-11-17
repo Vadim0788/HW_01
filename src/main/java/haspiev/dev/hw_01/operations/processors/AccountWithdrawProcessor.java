@@ -20,7 +20,7 @@ public class AccountWithdrawProcessor implements OperationCommandProcessor {
     @Override
     public void processOperation() {
         System.out.println("Enter account id:");
-        int accounId = Integer.parseInt(scanner.nextLine());
+        Long accounId = Long.parseLong(scanner.nextLine());
         System.out.println("Enter amount to withdraw:");
         int amountToWithdraw = Integer.parseInt(scanner.nextLine());
         accountService.withdrawFromAccount(accounId, amountToWithdraw);
