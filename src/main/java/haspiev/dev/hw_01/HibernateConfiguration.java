@@ -20,6 +20,7 @@ public class HibernateConfiguration {
                 .setProperty("hibernate.connection.username", "postgres")
                 .setProperty("hibernate.connection.password", "root")
                 .setProperty("hibernate.show_sql", "true")
+                .setProperty("hibernate.current_session_context_class", "thread")
                 .setProperty("hibernate.hbm2ddl.auto", "create-drop");
 
         return configuration.buildSessionFactory();

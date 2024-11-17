@@ -1,12 +1,11 @@
 package haspiev.dev.hw_01;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class TransactionHelper {
@@ -16,45 +15,27 @@ public class TransactionHelper {
         this.sessionFactory = sessionFactory;
     }
 
-    public void executeInTransaction(Consumer<Session> action) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.getTransaction();
-            transaction.begin();
+    public <T> T executeInTransaction(Supplier<T> action) {
 
-            action.accept(session);
-
-            transaction.commit();
-
-        } catch (Exception e) {
-            if ( e instanceof IllegalArgumentException){
-                throw e;
-            }
-            if (transaction != null) {
-                transaction.rollback();
-            }
+        var session = sessionFactory.getCurrentSession();
+        Transaction transaction = session.getTransaction();
+        if (transaction.getStatus().equals(TransactionStatus.ACTIVE)) {
+            return action.get();
         }
-    }
-
-    public <T> T executeInTransaction(Function<Session, T> action) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try {
             transaction = session.getTransaction();
             transaction.begin();
 
-            var result = action.apply(session);
+            var result = action.get();
 
             session.getTransaction().commit();
             return result;
 
         }  catch (Exception e) {
-            if ( e instanceof IllegalArgumentException){
-                throw e;
-            }
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            transaction.rollback();
             throw e;
+        } finally {
+            session.close();
         }
     }
 }

@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +15,21 @@ public class AccountService {
 
     private final TransactionHelper transactionHelper;
 
+    private final SessionFactory sessionFactory;
+
     public AccountService(
             @Value("${account.default-amount}") double defaultAmount,
             @Value("${account.transfer-commission}") double transferCommission,
-            TransactionHelper transactionHelper) {
+            TransactionHelper transactionHelper, SessionFactory sessionFactory) {
         this.transactionHelper = transactionHelper;
         this.defaultAmount = defaultAmount;
         this.transferCommission = transferCommission;
+        this.sessionFactory = sessionFactory;
     }
 
     public Account createAccount(Long id) {
-        return transactionHelper.executeInTransaction(session -> {
+        return transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             User user = session.get(User.class, id);
             if (user == null) {
                 throw new IllegalArgumentException("User with id %s does not exist.".formatted(id));
@@ -46,13 +51,14 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot deposit not positive amount: amount=%s"
                     .formatted(amount));
         }
-        transactionHelper.executeInTransaction(session -> {
+        transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             Account account = session.get(Account.class, accountId);
             if (account == null) {
                 throw new IllegalArgumentException("No such account %s.".formatted(accountId));
             }
             account.setMoneyAmount(account.getMoneyAmount() + amount);
-
+            return null;
         });
     }
 
@@ -61,7 +67,8 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot withdraw not positive amount: amount=%s"
                     .formatted(amount));
         }
-        transactionHelper.executeInTransaction(session -> {
+        transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             Account account = session.get(Account.class, accountId);
             if (account == null) {
                 throw new IllegalArgumentException("No such account %s.".formatted(accountId));
@@ -70,6 +77,7 @@ public class AccountService {
                 throw new IllegalArgumentException("Insufficient funds.");
             }
             account.setMoneyAmount(account.getMoneyAmount() - amount);
+            return null;
         });
     }
 
@@ -79,7 +87,8 @@ public class AccountService {
             throw new IllegalArgumentException("Cannot transfer not positive amount: amount=%s"
                     .formatted(amount));
         }
-        transactionHelper.executeInTransaction(session -> {
+        transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             Account source = session.get(Account.class, sourceAccountId);
             Account target = session.get(Account.class, targetAccountId);
             if (source == null) {
@@ -101,12 +110,13 @@ public class AccountService {
 
             source.setMoneyAmount(source.getMoneyAmount() - totalAmount);
             target.setMoneyAmount(target.getMoneyAmount() + amount);
-
+            return null;
         });
     }
 
     public void closeAccount(Long accountId) {
-        transactionHelper.executeInTransaction(session -> {
+        transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             Account accountToRemove = session.get(Account.class, accountId);
             if (accountToRemove == null) {
                 throw new IllegalArgumentException("No such account %s.".formatted(accountId));
@@ -127,6 +137,7 @@ public class AccountService {
             accountToDeposit.setMoneyAmount(accountToDeposit.getMoneyAmount() + accountToRemove.getMoneyAmount());
 
             session.remove(accountToRemove);
+            return null;
         });
     }
 

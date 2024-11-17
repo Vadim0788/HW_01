@@ -1,5 +1,6 @@
 package haspiev.dev.hw_01;
 
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -11,13 +12,17 @@ public class UserService {
 
     private final AccountService accountService;
 
-    public UserService(TransactionHelper transactionHelper, AccountService accountService) {
+    private final SessionFactory sessionFactory;
+
+    public UserService(TransactionHelper transactionHelper, AccountService accountService, SessionFactory sessionFactory) {
         this.transactionHelper = transactionHelper;
         this.accountService = accountService;
+        this.sessionFactory = sessionFactory;
     }
 
     public User createUser(String login) {
-        return transactionHelper.executeInTransaction(session -> {
+        return transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             User newUser = new User(login);
 
             if (session
@@ -37,7 +42,8 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return transactionHelper.executeInTransaction(session -> {
+        return transactionHelper.executeInTransaction(() -> {
+            var session = sessionFactory.getCurrentSession();
             return session
                     .createQuery("SELECT u FROM User u LEFT JOIN FETCH u.accountList", User.class)
                     .list();
