@@ -1,23 +1,30 @@
 package haspiev.dev.hw_01;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "users")
 public class User {
 
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private final String login;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private final List<Account> accountList;
 
 
-    public User(int id, String login) {
-        this.id = id;
+    public User(String login) {
         this.login = login;
         this.accountList = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
+    public User() {
+        this.login = "default_login";
+        this.accountList = new ArrayList<>();
     }
 
     public List<Account> getAccountList() {
@@ -35,5 +42,9 @@ public class User {
                 ",name'" + login + '\'' +
                 ", accountList=" + accountList +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
     }
 }

@@ -21,7 +21,7 @@ public class CloseAccountProcessor implements OperationCommandProcessor {
     @Override
     public boolean processOperation() {
         System.out.println("Enter account ID:");
-        int closeAccountId = Integer.parseInt(scanner.nextLine());
+        Long closeAccountId = Long.parseLong(scanner.nextLine());
 
         accountService.closeAccount(closeAccountId);
         System.out.println("Account with ID " + closeAccountId
