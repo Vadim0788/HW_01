@@ -33,9 +33,11 @@ public class TransactionHelper {
 
         }  catch (Exception e) {
             transaction.rollback();
-            throw e;
+            throw new IllegalArgumentException(e);
         } finally {
-            session.close();
+            if (session.isOpen()) {
+                session.close();
+            }
         }
     }
 }

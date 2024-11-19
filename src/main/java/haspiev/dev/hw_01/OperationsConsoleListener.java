@@ -4,6 +4,7 @@ import haspiev.dev.hw_01.operations.ConsoleOperationType;
 import haspiev.dev.hw_01.operations.OperationCommandProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -50,7 +51,10 @@ public class OperationsConsoleListener {
         while(doListen){
             var nextOperation = scanner.nextLine();
             try {
-                return ConsoleOperationType.valueOf(nextOperation);
+                return Arrays.stream(ConsoleOperationType.values())
+                        .filter(op -> op.name().equalsIgnoreCase(nextOperation))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid command"));
             } catch (IllegalArgumentException e) {
                 System.out.println("No such command found");
             }
